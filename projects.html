@@ -1,0 +1,579 @@
+from pathlib import Path
+
+html = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Engineering — Learning Roadmap</title>
+<style>
+  :root {
+    --bg: #080808;
+    --panel: #111;
+    --panel2: #171717;
+    --text: #f5f5f5;
+    --muted: #9a9a9a;
+    --line: #2a2a2a;
+    --accent: #fff;
+    --code: #0c0c0c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: 7vh 8vw 8vh;
+    position: relative;
+    overflow: auto;
+  }
+  .slide.active { display: flex; flex-direction: column; }
+  .kicker {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  h1 { font-size: clamp(42px, 6vw, 86px); line-height: .95; margin: 0 0 24px; letter-spacing: -.055em; }
+  h2 { font-size: clamp(34px, 4.2vw, 62px); line-height: 1; margin: 0 0 28px; letter-spacing: -.045em; }
+  h3 { margin: 0 0 12px; font-size: 22px; }
+  p { color: #d0d0d0; font-size: 18px; line-height: 1.55; max-width: 850px; }
+  .subtitle { color: var(--muted); font-size: 21px; max-width: 780px; line-height: 1.5; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  .card p { font-size: 15px; margin: 8px 0 0; color: var(--muted); }
+  .number {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 700;
+    letter-spacing: .15em;
+    margin-bottom: 12px;
+  }
+  pre {
+    background: var(--code);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    overflow: auto;
+    color: #e7e7e7;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  code { font-family: "SFMono-Regular", Consolas, monospace; }
+  .flow {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    margin: 20px 0;
+  }
+  .node {
+    border: 1px solid #3a3a3a;
+    background: #141414;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: monospace;
+    font-size: 14px;
+  }
+  .arrow { color: #666; font-size: 20px; }
+  ul { padding-left: 22px; color: #d2d2d2; line-height: 1.8; font-size: 17px; }
+  .tag {
+    display: inline-block;
+    border: 1px solid #353535;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: #cfcfcf;
+    font-size: 12px;
+    margin: 3px 4px 3px 0;
+  }
+  .bigquote {
+    border-left: 3px solid #fff;
+    padding-left: 22px;
+    font-size: clamp(25px, 3vw, 42px);
+    line-height: 1.2;
+    max-width: 1000px;
+    margin: 30px 0;
+  }
+  .footer {
+    position: fixed;
+    left: 8vw;
+    right: 8vw;
+    bottom: 22px;
+    display: flex;
+    justify-content: space-between;
+    color: #666;
+    font-size: 12px;
+    pointer-events: none;
+  }
+  .controls {
+    position: fixed; right: 28px; bottom: 18px; z-index: 10;
+    display: flex; gap: 8px; pointer-events: auto;
+  }
+  button {
+    background: #161616; color: #eee; border: 1px solid #333;
+    border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  }
+  button:hover { background: #222; }
+  .accent { color: #fff; }
+  .muted { color: var(--muted); }
+  .spacer { flex: 1; }
+  .resource {
+    display: flex; justify-content: space-between; gap: 20px;
+    padding: 15px 0; border-bottom: 1px solid var(--line);
+  }
+  .resource a { color: white; }
+  @media (max-width: 800px) {
+    .slide { padding: 6vh 6vw 10vh; }
+    .grid, .grid3 { grid-template-columns: 1fr; }
+    .footer { left: 6vw; right: 6vw; }
+    .controls { right: 12px; }
+    p, ul { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">Agent Engineering · Learning Roadmap</div>
+  <h1>Build agents.<br>Don't just learn them.</h1>
+  <p class="subtitle">A project-first path from raw tool calling to production-style autonomous systems, with real hackathon ideas to rebuild along the way.</p>
+  <div class="bigquote">LLM + tools + state + control loop + evaluation + permissions</div>
+  <div class="spacer"></div>
+  <div>
+    <span class="tag">Python</span><span class="tag">LLM APIs</span><span class="tag">Tool Calling</span>
+    <span class="tag">LangGraph</span><span class="tag">Agents</span><span class="tag">Production</span>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">01 · Mental Model</div>
+  <h2>What is an agent?</h2>
+  <div class="flow">
+    <div class="node">User</div><div class="arrow">→</div>
+    <div class="node">LLM / Reason</div><div class="arrow">→</div>
+    <div class="node">Choose tool?</div><div class="arrow">→</div>
+    <div class="node">Tool</div><div class="arrow">→</div>
+    <div class="node">Observation</div><div class="arrow">↺</div>
+  </div>
+  <pre><code>while not finished:
+    response = llm(state)
+
+    if response.tool_call:
+        result = execute(response.tool_call)
+        state.append(result)
+    else:
+        return response</code></pre>
+  <p>The first goal is to understand this loop without a framework. Frameworks should make the architecture easier to build, not hide it from you.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">02 · Toy Project 1</div>
+  <h2>Tool-Calling Agent</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Build</h3>
+      <p>Personal calculator agent with <code>calculate()</code>, <code>get_time()</code>, and <code>convert_units()</code>.</p>
+    </div>
+    <div class="card">
+      <h3>Learn</h3>
+      <p>Function schemas, arguments, tool results, the agent loop, and structured outputs.</p>
+    </div>
+  </div>
+  <pre><code>User → LLM
+        ↓
+   tool_call(...)
+        ↓
+ execute_tool(...)
+        ↓
+   tool result
+        ↓
+      LLM
+        ↓
+    final answer</code></pre>
+  <p><strong>Rule:</strong> implement this one from scratch. No LangChain.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">03 · Toy Project 2</div>
+  <h2>ReAct Research Agent</h2>
+  <p>Build a small research assistant that searches, opens sources, extracts evidence, and synthesizes an answer.</p>
+  <div class="flow">
+    <div class="node">Question</div><div class="arrow">→</div>
+    <div class="node">Search</div><div class="arrow">→</div>
+    <div class="node">Observe</div><div class="arrow">→</div>
+    <div class="node">Search again</div><div class="arrow">→</div>
+    <div class="node">Synthesize</div>
+  </div>
+  <div class="grid3">
+    <div class="card"><h3>Tool</h3><p>search_web()</p></div>
+    <div class="card"><h3>Tool</h3><p>open_page()</p></div>
+    <div class="card"><h3>Output</h3><p>Evidence-backed answer</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">04 · Toy Project 3</div>
+  <h2>SQL Agent</h2>
+  <p>Ask natural-language questions over PostgreSQL and make the agent discover the schema before querying.</p>
+  <pre><code>User
+ ↓
+list_tables()
+ ↓
+describe_table()
+ ↓
+generate SQL
+ ↓
+check SQL
+ ↓
+execute SQL
+ ↓
+inspect result / correct errors
+ ↓
+answer</code></pre>
+  <div class="grid3">
+    <div class="card"><h3>State</h3><p>Schema, query, result, errors</p></div>
+    <div class="card"><h3>Failure loop</h3><p>Bad SQL → inspect → repair → retry</p></div>
+    <div class="card"><h3>Why it matters</h3><p>Very close to real enterprise agents</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">05 · Toy Project 4</div>
+  <h2>Mini Coding Agent</h2>
+  <p>Give an agent a repository and let it investigate, modify, test, and verify code.</p>
+  <div class="flow">
+    <div class="node">read_file</div><div class="arrow">→</div>
+    <div class="node">search_code</div><div class="arrow">→</div>
+    <div class="node">write_file</div><div class="arrow">→</div>
+    <div class="node">run_tests</div><div class="arrow">→</div>
+    <div class="node">fix</div>
+  </div>
+  <div class="card">
+    <h3>Challenge</h3>
+    <p>Give it a deliberately broken backend endpoint and ask: “Find the bug, fix it, and prove the fix with tests.”</p>
+  </div>
+  <p>You'll learn tool loops, execution, error recovery, verification, and why sandboxing matters.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">06 · Toy Project 5</div>
+  <h2>Memory Agent</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Short-term state</h3>
+      <p>Current conversation, task state, intermediate results.</p>
+    </div>
+    <div class="card">
+      <h3>Long-term memory</h3>
+      <p>Explicit facts stored and retrieved across sessions.</p>
+    </div>
+  </div>
+  <pre><code>remember("User uses PostgreSQL")
+             ↓
+        vector / DB store
+             ↓
+       search_memory()
+             ↓
+          context</code></pre>
+  <p>Don't make “memory” magical. Design the storage, retrieval, update, and deletion semantics yourself.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">07 · Toy Project 6</div>
+  <h2>Multi-Agent Team</h2>
+  <pre><code>                 Manager
+                    │
+        ┌───────────┼───────────┐
+        ↓           ↓           ↓
+    Researcher     Coder      Tester
+        │           │           │
+        └───────────┼───────────┘
+                    ↓
+                 Manager</code></pre>
+  <p>Build a software-engineering team. Then compare it against a single agent solving the same task.</p>
+  <div>
+    <span class="tag">Routing</span><span class="tag">Handoffs</span><span class="tag">Shared state</span>
+    <span class="tag">Specialization</span><span class="tag">Coordination cost</span>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">08 · Toy Project 7</div>
+  <h2>Evaluator → Optimizer</h2>
+  <div class="flow">
+    <div class="node">Generator</div><div class="arrow">→</div>
+    <div class="node">Evaluator</div><div class="arrow">→</div>
+    <div class="node">Score</div><div class="arrow">→</div>
+    <div class="node">Improve</div><div class="arrow">↺</div>
+  </div>
+  <p>Build a resume, SQL, code-review, or answer-quality agent where one model generates and another evaluates against explicit criteria.</p>
+  <pre><code>quality = evaluator(output)
+
+if quality < threshold:
+    output = generator(improvement_feedback)
+else:
+    finish()</code></pre>
+  <p>This introduces evaluation as a first-class part of an agent system.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">09 · Framework</div>
+  <h2>Now learn LangGraph</h2>
+  <p>Only after building the primitives yourself.</p>
+  <div class="grid3">
+    <div class="card"><h3>State</h3><p>Explicit task state</p></div>
+    <div class="card"><h3>Nodes</h3><p>LLM calls and tools</p></div>
+    <div class="card"><h3>Edges</h3><p>Routing and control flow</p></div>
+    <div class="card"><h3>Persistence</h3><p>Long-running tasks</p></div>
+    <div class="card"><h3>Human-in-loop</h3><p>Approval gates</p></div>
+    <div class="card"><h3>Durability</h3><p>Resume interrupted work</p></div>
+  </div>
+  <p class="muted">Goal: understand what the framework is abstracting, not just how to call its APIs.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">10 · Real Project</div>
+  <h2>AgentPress — Autonomous Newsroom</h2>
+  <p>Inspired by NandaHack 2026. Rebuild the technical architecture, not necessarily the original business model.</p>
+  <pre><code>Research Agents
+      ↓
+  Fact Checker
+      ↓
+     Editor
+      ↓
+     Writer
+      ↓
+    Reviewer
+      ↓
+   Publisher</code></pre>
+  <div class="grid3">
+    <div class="card"><h3>Research</h3><p>Collect claims and sources.</p></div>
+    <div class="card"><h3>Verification</h3><p>Check evidence and conflicts.</p></div>
+    <div class="card"><h3>Evaluation</h3><p>Reject weak drafts.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">11 · Real Project</div>
+  <h2>Agent Safety Honeypot</h2>
+  <p>Inspired by Litmus from NandaHack 2026.</p>
+  <pre><code>Agent
+  ↓
+External tool / website
+  ↓
+Untrusted instruction
+  ↓
+Does the agent obey it?
+  ↓
+Evaluator</code></pre>
+  <div class="grid">
+    <div class="card"><h3>Learn</h3><p>Prompt injection, trust boundaries, tool security, sandboxing, permissions.</p></div>
+    <div class="card"><h3>Make it measurable</h3><p>Build an attack suite and track attack success rate, false positives, and blocked actions.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">12 · Real Project</div>
+  <h2>Agent Governance Simulator</h2>
+  <p>Inspired by “2036 Agentic Town” from NandaHack.</p>
+  <pre><code>Agent identity
+      ↓
+Permissions / policy
+      ↓
+Resource request
+      ↓
+Governance agent
+      ↓
+Decision
+      ↓
+Ledger / state</code></pre>
+  <p>Explore identity, reputation, permissions, policies, transactions, and auditable decisions between autonomous agents.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">13 · Real Project</div>
+  <h2>Supply Chain Risk Agent</h2>
+  <p>Inspired by RiskWise, a winner of Microsoft's AI Agents Hackathon.</p>
+  <div class="flow">
+    <div class="node">Supplier data</div><div class="arrow">→</div>
+    <div class="node">Research</div><div class="arrow">→</div>
+    <div class="node">Risk analysis</div><div class="arrow">→</div>
+    <div class="node">Evidence</div><div class="arrow">→</div>
+    <div class="node">Human approval</div>
+  </div>
+  <div class="card">
+    <h3>Important challenge</h3>
+    <p>Make the system explain every risk assessment with sources, evidence, intermediate findings, and uncertainty.</p>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">14 · Real Project</div>
+  <h2>Performance Development Agent</h2>
+  <p>Inspired by Microsoft's Agent Academy hackathon.</p>
+  <pre><code>Feedback
+   ↓
+Skill-gap analysis
+   ↓
+Learning-resource research
+   ↓
+Roadmap generation
+   ↓
+Milestones
+   ↓
+Evaluation</code></pre>
+  <p>Good project for learning planning, decomposition, retrieval, personalized recommendations, and evaluator loops.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">15 · Real Project</div>
+  <h2>Autonomous CRM Agent</h2>
+  <p>Inspired by recent Agentic GTM hackathon projects.</p>
+  <pre><code>CRM
+ ↓
+Detect stale lead
+ ↓
+Research company
+ ↓
+Find buying signals
+ ↓
+Draft follow-up
+ ↓
+Human approval
+ ↓
+Update CRM</code></pre>
+  <p>This is where agent engineering meets real enterprise workflows: permissions, APIs, approvals, audit logs, retries, and side effects.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">16 · Real Project</div>
+  <h2>Anatom-AI Pattern</h2>
+  <p>Inspired by the Anatom-AI project from an agentic AI hackathon.</p>
+  <pre><code>Natural language
+      ↓
+Interpretation
+      ↓
+Structured representation
+      ↓
+Deterministic / visual system
+      ↓
+LLM explanation</code></pre>
+  <div class="bigquote">Don't make one LLM do everything. Use structured intermediate representations and deterministic components where possible.</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">17 · The Production Layer</div>
+  <h2>Every serious agent needs more than an LLM.</h2>
+  <div class="grid3">
+    <div class="card"><h3>Tools</h3><p>APIs, DBs, browsers, files</p></div>
+    <div class="card"><h3>State</h3><p>Task and conversation state</p></div>
+    <div class="card"><h3>Control</h3><p>Routing, loops, retries</p></div>
+    <div class="card"><h3>Safety</h3><p>Permissions, sandboxing</p></div>
+    <div class="card"><h3>Evaluation</h3><p>Quality and task success</p></div>
+    <div class="card"><h3>Observability</h3><p>Traces, cost, latency</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">18 · Your Capstone</div>
+  <h2>Build a Coding Agent</h2>
+  <p>A production-style autonomous software engineering agent combines almost everything you've learned.</p>
+  <pre><code>                    User
+                      ↓
+                   Planner
+                      ↓
+             ┌────────┴────────┐
+             ↓                 ↓
+         Researcher          Coder
+             ↓                 ↓
+             └────────┬────────┘
+                      ↓
+                   Tester
+                      ↓
+                   Reviewer
+                      ↓
+                Human Approval
+                      ↓
+                    Git PR</code></pre>
+  <div>
+    <span class="tag">PostgreSQL</span><span class="tag">Redis</span><span class="tag">Docker sandbox</span>
+    <span class="tag">Tracing</span><span class="tag">Evaluation</span><span class="tag">Tool permissions</span>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">19 · Learning Order</div>
+  <h2>The exact sequence</h2>
+  <div class="grid">
+    <div class="card"><div class="number">01 → 04</div><h3>Primitives</h3><p>Tool calling → ReAct → SQL agent → Coding agent</p></div>
+    <div class="card"><div class="number">05 → 07</div><h3>Agent systems</h3><p>Memory → Multi-agent → Evaluator/optimizer</p></div>
+    <div class="card"><div class="number">08 → 10</div><h3>Frameworks</h3><p>LangGraph → Agents SDK → persistence / HITL</p></div>
+    <div class="card"><div class="number">11 → 15</div><h3>Real projects</h3><p>Newsroom → Safety → Governance → Risk → CRM</p></div>
+  </div>
+  <div class="bigquote">One framework deeply. Five frameworks shallowly is not the goal.</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">20 · Resources</div>
+  <h2>Start here</h2>
+  <div class="resource"><span>Anthropic — Building Effective Agents</span><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">Open ↗</a></div>
+  <div class="resource"><span>LangGraph Documentation</span><a href="https://langchain-ai.github.io/langgraph/" target="_blank">Open ↗</a></div>
+  <div class="resource"><span>LangGraph SQL Agent Tutorial</span><a href="https://langchain-ai.github.io/langgraph/tutorials/sql-agent/" target="_blank">Open ↗</a></div>
+  <div class="resource"><span>Microsoft AI Agents Hackathon Winners</span><a href="https://microsoft.github.io/AI_Agents_Hackathon/winners/" target="_blank">Open ↗</a></div>
+  <div class="resource"><span>NandaHack</span><a href="https://nandahack.media.mit.edu/" target="_blank">Open ↗</a></div>
+  <div class="resource"><span>Microsoft Agent Academy</span><a href="https://microsoft.github.io/agent-academy/" target="_blank">Open ↗</a></div>
+  <div class="bigquote">Build the toy version. Break it. Measure it. Then build the real version.</div>
+</section>
+
+<div class="footer">
+  <span>AGENT ENGINEERING</span>
+  <span id="counter">1 / 20</span>
+</div>
+
+<div class="controls">
+  <button onclick="prev()">←</button>
+  <button onclick="next()">→</button>
+</div>
+</div>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const counter = document.getElementById('counter');
+
+function show(i) {
+  current = (i + slides.length) % slides.length;
+  slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+  counter.textContent = `${current + 1} / ${slides.length}`;
+  slides[current].scrollTop = 0;
+}
+function next() { show(current + 1); }
+function prev() { show(current - 1); }
+
+document.addEventListener('keydown', e => {
+  if (['ArrowRight','PageDown',' '].includes(e.key)) { e.preventDefault(); next(); }
+  if (['ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); prev(); }
+  if (e.key === 'Home') show(0);
+  if (e.key === 'End') show(slides.length - 1);
+});
+</script>
+</body>
+</html>
+"""
+
+path = Path("/mnt/data/agent_engineering_learning_roadmap.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created: {path}")
+
